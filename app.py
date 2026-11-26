@@ -1,6 +1,10 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
+import _osx_support
 
 app = Flask(__name__)
+
+UPLOAD_FOLDER = "shared"
+app.config["UPLOAD_"]
 
 @app.route("/")
 def home():

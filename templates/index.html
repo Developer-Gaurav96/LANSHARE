@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LANSHARE</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
     <div class="nav">
         <div class="logo"></div>
@@ -16,11 +20,24 @@
     </div>
     <div class="header">
         <div class="h1">
-            Your Files. Your Network.
+            Your Files. &nbsp;<span class="gradient-text">Your Network.</span>
         </div>
         <div class="h2">
-            Fast, private file sharing across devices connected to your network.                                                                                                                                                                          
+            Fast, private file sharing across devices connected to your network.
         </div>
     </div>
+    <section class="upload-card">
+        <div class="drop-zone">
+            <div class="upload-icon">↑</div>
+            <p class="drop-title">Drop files here or <span>browse</span></p>
+            <p class="drop-subtitle">Select files from your device to share.</p>
+            <button type="button" class="upload-btn">UPLOAD</button>
+        </div>
+    </section>
+    <div class="shared-files">
+        <div class="head">Shared files</div>
+        <div class="file"></div>
+    </div>
 </body>
+
 </html>
