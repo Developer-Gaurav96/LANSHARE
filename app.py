@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request
-import _osx_support
+import os
 
 app = Flask(__name__)
 
 UPLOAD_FOLDER = "shared"
-app.config["UPLOAD_"]
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route("/")
 def home():

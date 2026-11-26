@@ -5,61 +5,116 @@
     font-style: normal;
 }
 
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+html {
+    width: 100%;
+    min-height: 100%;
+}
 
 body {
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
     background-color: #06080D;
-    color: #ffffff;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    /* font-family: 'Space Grotesk', sans-serif; */
+    color: #FFFFFF;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     display: flex;
-    justify-content: center;
     align-items: center;
     flex-direction: column;
 }
 
+/* Navigation */
 
-
-.nav{
+.nav {
     width: 100%;
-    max-width: 100vw;
+    height: 50px;
     background-color: #06080D;
-    height: 45px;
     border-bottom: 1px solid #1B2333;
-    
 }
 
-.header .h1{
-    font-size: 40px;
-    color: #F1F5FB;
-    font-family: 'Space Grotesk', sans-serif;
+/* Header */
+
+.header {
+    width: 100%;
+    max-width: 900px;
+    margin: 15px 0 20px;
+    padding: 0 20px;
+    text-align: center;
 }
 
-.header .h2{
-    font-size: 15px;
+.drop-zone input[type="file"] {
+    width: 100%;
+    max-width: 100%;
     color: #8491A6;
+    font-size: 13px;
+    cursor: pointer;
 }
 
-.header .h1, .header .h2{
+.drop-zone input[type="file"]::file-selector-button {
+    padding: 9px 16px;
+    margin-right: 12px;
+    border: 1px solid #253047;
+    border-radius: 7px;
+    background-color: #151C2A;
+    color: #F1F5FB;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.drop-zone {
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.drop-zone.drag-over {
+    border-color: #3B82F6;
+    background-color: #111C30;
+}
+
+.drop-zone input[type="file"]::file-selector-button:hover {
+    background-color: #202B40;
+}
+
+.header .h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(27px, 4.5vw, 42px);
+    line-height: 1.2;
+    color: #F1F5FB;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-sizing: border-box;
-    margin-top: 3px;
+    flex-wrap: wrap;
 }
 
-.header{
-    margin: 30px; 
+.header .h2 {
+    margin-top: 5px;
+    font-size: clamp(13px, 1.5vw, 15px);
+    line-height: 1.6;
+    color: #8491A6;
 }
+
+/* Gradient text */
+
+.gradient-text {
+    background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 55%, #38BDF8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Upload card */
 
 .upload-card {
-    width: 90%; 
+    width: calc(100% - 40px);
     max-width: 540px;
+    height: 300px;
     padding: 18px;
     background-color: #0D111A;
     border: 1px solid #1B2333;
@@ -67,23 +122,22 @@ body {
 }
 
 .drop-zone {
-    height: auto;
-    display: flex;
-    min-height: 220px;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 36px 24px;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 12px;
+    padding: 20px;
     border: 2px dashed #253047;
     border-radius: 10px;
     text-align: center;
 }
 
-.upload-icon {
-    font-size: 28px;
-    color: #3B82F6;
-    line-height: 1;
+.upload-icon img {
+    display: block;
+    width: 45px;
+    height: 45px;
 }
 
 .drop-title {
@@ -92,21 +146,29 @@ body {
     color: #F1F5FB;
 }
 
-.drop-title span {
-    color: #9BA7BA;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-
 .drop-subtitle {
     font-size: 13px;
+    line-height: 1.5;
     color: #8491A6;
 }
 
+/* File input */
+
+.drop-zone input[type="file"] {
+    width: 100%;
+    max-width: 100%;
+    color: #9BA7BA;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+/* Upload button */
+
 .upload-btn {
-    margin-top: 8px;
     width: 100%;
     max-width: 460px;
+    min-height: 44px;
+    margin-top: 6px;
     padding: 11px 20px;
     border: none;
     border-radius: 8px;
@@ -115,12 +177,146 @@ body {
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: inherit;
 }
 
-.gradient-text {
-    background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 55%, #38BDF8 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+.upload-btn:hover {
+    filter: brightness(1.1);
+}
+
+/* Shared files */
+
+.shared-files {
+    width: calc(100% - 40px);
+    max-width: 540px;
+    margin: 32px 0;
+    color: #F1F5FB;
+}
+
+.shared-files .head {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 14px;
+}
+
+.shared-files .file {
+    width: 100%;
+}
+
+/* Tablet */
+
+@media (min-width: 600px) and (max-width: 900px) {
+    .header {
+        margin-top: 42px;
+    }
+
+    .upload-card,
+    .shared-files {
+        max-width: 520px;
+    }
+}
+
+/* Android phones and small screens */
+
+@media (max-width: 599px) {
+    .nav {
+        height: 46px;
+    }
+
+    .header {
+        margin: 38px 0 26px;
+        padding: 0 18px;
+    }
+
+    .header .h1 {
+        font-size: clamp(25px, 7vw, 34px);
+        line-height: 1.25;
+    }
+
+    .header .h2 {
+        max-width: 360px;
+        margin: 10px auto 0;
+        font-size: 13px;
+    }
+
+    .upload-card {
+        width: calc(100% - 28px);
+        padding: 12px;
+        border-radius: 11px;
+    }
+
+    .drop-zone {
+        min-height: 215px;
+        padding: 28px 14px;
+        gap: 11px;
+    }
+
+    .upload-icon img {
+        width: 42px;
+        height: 42px;
+    }
+
+    .drop-title {
+        font-size: 15px;
+    }
+
+    .drop-subtitle {
+        font-size: 12px;
+    }
+
+    .drop-zone input[type="file"] {
+        font-size: 12px;
+    }
+
+    .upload-btn {
+        min-height: 46px;
+        font-size: 14px;
+    }
+
+    .shared-files {
+        width: calc(100% - 28px);
+        margin-top: 26px;
+    }
+
+    .shared-files .head {
+        font-size: 16px;
+    }
+
+    .header {
+        text-align: left;
+    }
+
+    .header .h1 {
+        justify-content: flex-start;
+    }
+
+    .header .h2 {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+/* Very narrow phones */
+
+@media (max-width: 360px) {
+    .header .h1 {
+        font-size: 25px;
+    }
+
+    .header {
+        padding: 0 12px;
+    }
+
+    .upload-card {
+        width: calc(100% - 20px);
+        padding: 9px;
+    }
+
+    .drop-zone {
+        padding: 24px 10px;
+    }
+
+    .shared-files {
+        width: calc(100% - 20px);
+    }
 }
