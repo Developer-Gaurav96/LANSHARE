@@ -5,6 +5,8 @@ import qrcode
 import io
 
 app = Flask(__name__)
+LAN_IP = "192.168.1.9"
+LAN_URL = f"http://{LAN_IP}:5000/"
 
 UPLOAD_FOLDER = "shared"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -38,7 +40,11 @@ def home():
             "name": file,
             "size": format_size(size),
         })
-    return render_template("index.html", file_details=file_details)
+    return render_template(
+    "index.html",
+    file_details=file_details,
+    lan_url=LAN_URL
+)
 
 @app.route("/download/<filename>")
 def download_file(filename):
@@ -108,7 +114,7 @@ def upload_file():
 
 @app.route("/qr-code")
 def generate_qr():
-    qr = qrcode.make(request.host_url)
+    qr = qrcode.make(LAN_URL)
 
     image = io.BytesIO()
     qr.save(image, format="PNG")
