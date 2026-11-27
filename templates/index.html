@@ -62,7 +62,9 @@
 
                 <input type="file" name="files" id="fileInput" class="visually-hidden" multiple>
 
-                <div id="selected-files" class="selected-files"></div> <button type="submit" class="upload-btn">
+                <div id="selected-files" class="selected-files"></div>
+                <div id="upload-status" class="upload-status"></div>
+                <button type="submit" class="upload-btn">
                     UPLOAD FILE
                 </button>
 
@@ -157,7 +159,7 @@
         const dropZone = document.querySelector(".drop-zone");
         const fileInput = document.querySelector("#fileInput");
         const selectedFiles = document.querySelector("#selected-files");
-
+        const uploadStatus = document.querySelector("#upload-status");
         const fileList = document.querySelector(".file-list");
         const fileCount = document.querySelector(".file-count");
 
@@ -227,6 +229,14 @@
 
         dropZone.addEventListener("submit", async (e) => {
             e.preventDefault();
+            if (fileInput.files.length === 0) {
+                uploadStatus.textContent = "Please select at least one file.";
+                uploadStatus.className = "upload-status error";
+                return;
+            }
+
+            uploadStatus.textContent = "Uploading...";
+            uploadStatus.className = "upload-status uploading";
 
             const formData = new FormData(dropZone);
 
@@ -240,6 +250,8 @@
 
                 if (response.ok && result.success) {
                     updateFileList(result.files);
+                    uploadStatus.textContent = "Files uploaded successfully!";
+                    uploadStatus.className = "upload-status success";
 
                     selectedFiles.innerHTML = "";
                     fileInput.value = "";
@@ -247,10 +259,14 @@
                     console.log(result.message);
                 } else {
                     console.error("Upload failed:", result);
+                    uploadStatus.textContent = "Upload failed. Please try again.";
+                    uploadStatus.className = "upload-status error";
                 }
 
             } catch (error) {
                 console.error("Upload error:", error);
+                uploadStatus.textContent = "Something went wrong. Check your connection.";
+                uploadStatus.className = "upload-status error";
             }
         });
 
@@ -303,6 +319,8 @@
             const files = fileInput.files;
 
             selectedFiles.innerHTML = "";
+            uploadStatus.textContent = "";
+            uploadStatus.className = "upload-status";
 
             if (files.length === 0) {
                 return;

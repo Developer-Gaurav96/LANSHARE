@@ -668,3 +668,21 @@ main {
     object-fit: contain;
     border-radius: 7px;
 }
+
+.upload-status {
+    margin-top: 12px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.upload-status.uploading {
+    color: #888;
+}
+
+.upload-status.success {
+    color: #22c55e;
+}
+
+.upload-status.error {
+    color: #ef4444;
+}
