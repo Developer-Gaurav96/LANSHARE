@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 import os
 from werkzeug.utils import secure_filename
 
@@ -8,10 +8,39 @@ UPLOAD_FOLDER = "shared"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+def format_size(size):
+    file_sizes = ["KB", "MB", "GB", "TB"]
+    i = -1
+
+    while size >= 1000 and i < len(file_sizes) - 1:
+        size = size / 1000
+        i += 1
+
+    if i == -1:
+        return f"{size} bytes"
+
+    return f"{size:.2f} {file_sizes[i]}"
+
 @app.route("/")
 def home():
-    # return "LANSHARE is running!"
-    return render_template("index.html")
+
+    files = os.listdir(app.config["UPLOAD_FOLDER"])
+    file_details = []
+    for file in files:
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], file)
+        size = os.path.getsize(file_path)
+
+        file_details.append({
+            "name": file,
+            "size": format_size(size),
+        })
+    return render_template("index.html", file_details=file_details)
+
+@app.route("/download/<filename>")
+def download_file(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"],
+                        filename,
+                        as_attachment=True)
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
@@ -32,7 +61,7 @@ def upload_file():
 
 
     uploaded_file.save(file_path)
-    return "File uploaded successfully!"
+    return(redirect(url_for("home")))
 
 if (__name__ == "__main__"):
     app.run(debug=True)

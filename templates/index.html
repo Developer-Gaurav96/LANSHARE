@@ -27,56 +27,65 @@
         </div>
     </div>
     <section class="upload-card">
-    <form class="drop-zone" action="/upload" method="POST" enctype="multipart/form-data">
+        <form class="drop-zone" action="/upload" method="POST" enctype="multipart/form-data">
 
-        <div class="upload-icon">
-        <img src="{{ url_for('static', filename='images/upload-cloud.svg') }}" alt="Upload">
-        </div>
+            <div class="upload-icon">
+                <img src="{{ url_for('static', filename='images/upload-cloud.svg') }}" alt="Upload">
+            </div>
 
-        <p class="drop-title">
-            Select a file to upload
-        </p>
+            <p class="drop-title">
+                Select a file to upload
+            </p>
 
-        <p class="drop-subtitle">
-        Choose a file or drag it here to share.
-        </p>
+            <p class="drop-subtitle">
+                Choose a file or drag it here to share.
+            </p>
 
-        <input type="file" name="file" id="fileInput" required>
+            <input type="file" name="file" id="fileInput" required>
 
-        <button type="submit" class="upload-btn">UPLOAD</button>
+            <button type="submit" class="upload-btn">UPLOAD</button>
 
-    </form>
-</section>
+        </form>
+    </section>
     <div class="shared-files">
         <div class="head">Shared files</div>
-        <div class="file"></div>
+
+        {% for file in file_details %}
+        <div class="file">
+            <a href="{{ url_for('download_file', filename=file.name) }}">
+                {{ file.name }}
+            </a>
+            <div class="size">{{ file.size }}</div>
+        </div>
+        {% endfor %}
+
     </div>
 
-<script>
-    const dropZone = document.querySelector(".drop-zone");
-    const fileInput = document.querySelector("#fileInput");
+    <script>
+        const dropZone = document.querySelector(".drop-zone");
+        const fileInput = document.querySelector("#fileInput");
 
-    dropZone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        dropZone.classList.add("drag-over");
-    });
+        dropZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropZone.classList.add("drag-over");
+        });
 
-    dropZone.addEventListener("dragleave", () => {
-        dropZone.classList.remove("drag-over");
-    });
+        dropZone.addEventListener("dragleave", () => {
+            dropZone.classList.remove("drag-over");
+        });
 
-    dropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
+        dropZone.addEventListener("drop", (e) => {
+            e.preventDefault();
 
-        dropZone.classList.remove("drag-over");
+            dropZone.classList.remove("drag-over");
 
-        const files = e.dataTransfer.files;
+            const files = e.dataTransfer.files;
 
-        if (files.length > 0) {
-            fileInput.files = files;
-        }
-    });
-</script>
+            if (files.length > 0) {
+                fileInput.files = files;
+            }
+        });
+    </script>
 
 </body>
 
