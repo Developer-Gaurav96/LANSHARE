@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory, jsonify
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, jsonify, send_file
 import os
 from werkzeug.utils import secure_filename
+import qrcode
+import io
 
 app = Flask(__name__)
 
@@ -104,7 +106,16 @@ def upload_file():
         "files": file_details
     })
 
+@app.route("/qr-code")
+def generate_qr():
+    qr = qrcode.make(request.host_url)
+
+    image = io.BytesIO()
+    qr.save(image, format="PNG")
+    image.seek(0)
+
+    return send_file(image, mimetype="image/png")
 
 
-if (__name__ == "__main__"):
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)

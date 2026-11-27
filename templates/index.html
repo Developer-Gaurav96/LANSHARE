@@ -138,16 +138,15 @@
             </div>
 
             <div class="qr-placeholder">
-                <span>QR</span>
+                <img src="{{ url_for('generate_qr') }}" alt="LANSHARE QR Code">
             </div>
 
             <div class="network-address">
                 <span>NETWORK ACCESS</span>
-                <p>QR code and LAN address will appear here.</p>
+                <p>{{ request.host_url }}</p>
             </div>
 
         </section>
-
     </main>
 
     <footer class="footer">
@@ -163,7 +162,7 @@
         const fileCount = document.querySelector(".file-count");
 
 
-        
+
         function updateFileList(files) {
             fileList.innerHTML = "";
 
@@ -225,7 +224,7 @@
         }
 
 
-        
+
         dropZone.addEventListener("submit", async (e) => {
             e.preventDefault();
 
@@ -256,7 +255,7 @@
         });
 
 
-        
+
         fileList.addEventListener("submit", async (e) => {
             const form = e.target.closest(".file-actions form");
 
@@ -299,7 +298,7 @@
         });
 
 
-        
+
         fileInput.addEventListener("change", () => {
             const files = fileInput.files;
 
