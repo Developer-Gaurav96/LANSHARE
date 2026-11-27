@@ -5,65 +5,320 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LANSHARE</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-    <div class="nav">
-        <div class="logo"></div>
-        <div class="local-network"></div>
-    </div>
-    <div class="header">
-        <div class="h1">
-            Your Files. &nbsp;<span class="gradient-text">Your Network.</span>
-        </div>
-        <div class="h2">
-            Fast, private file sharing across devices connected to your network.
-        </div>
-    </div>
-    <section class="upload-card">
-        <form class="drop-zone" action="/upload" method="POST" enctype="multipart/form-data">
 
-            <div class="upload-icon">
-                <img src="{{ url_for('static', filename='images/upload-cloud.svg') }}" alt="Upload">
+    <nav class="nav">
+        <div class="logo">
+            <span class="logo-icon">L</span>
+            <span>LANSHARE</span>
+        </div>
+
+        <div class="local-network">
+            <span class="status-dot"></span>
+            LOCAL NETWORK
+        </div>
+    </nav>
+
+    <main>
+
+        <header class="header">
+            <h1>
+                Your Files. <span class="gradient-text">Your Network.</span>
+            </h1>
+
+            <p>
+                Fast, private file sharing across devices connected to your network.
+            </p>
+        </header>
+
+        <section class="upload-card">
+
+            <form class="drop-zone" action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data">
+
+                <div class="upload-icon">
+                    <img src="{{ url_for('static', filename='images/upload-cloud.svg') }}" alt="Upload">
+                </div>
+
+                <div class="upload-content">
+                    <p class="drop-title">
+                        Drop files here or
+                        <label for="fileInput" class="browse-link">browse</label>
+                    </p>
+
+                    <p class="drop-subtitle">
+                        Select a file from your device to share
+                    </p>
+                </div>
+
+                <input type="file" name="files" id="fileInput" class="visually-hidden" multiple>
+
+                <div id="selected-files" class="selected-files"></div> <button type="submit" class="upload-btn">
+                    UPLOAD FILE
+                </button>
+
+            </form>
+
+        </section>
+
+        <section class="shared-files" id="shared-files">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Shared files</h2>
+                    <p>Your uploaded files are available here.</p>
+                </div>
+
+                <span class="file-count">{{ file_details|length }} files</span>
             </div>
 
-            <p class="drop-title">
-                Select a file to upload
-            </p>
+            <div class="file-list">
 
-            <p class="drop-subtitle">
-                Choose a file or drag it here to share.
-            </p>
+                {% for file in file_details %}
 
-            <input type="file" name="file" id="fileInput" required>
+                <div class="file">
 
-            <button type="submit" class="upload-btn">UPLOAD</button>
+                    <div class="file-info">
+                        <div class="file-icon">
+                            <span>{{ file.name.rsplit('.', 1)[-1][:4]|upper if '.' in file.name else 'FILE' }}</span>
+                        </div>
 
-        </form>
-    </section>
-    <div class="shared-files">
-        <div class="head">Shared files</div>
+                        <div class="file-details">
+                            <span class="file-name">{{ file.name }}</span>
+                            <span class="file-size">{{ file.size }}</span>
+                        </div>
+                    </div>
 
-        {% for file in file_details %}
-        <div class="file">
-            <a href="{{ url_for('download_file', filename=file.name) }}">
-                {{ file.name }}
-            </a>
-            <div class="size">{{ file.size }}</div>
-        </div>
-        {% endfor %}
+                    <div class="file-actions">
 
-    </div>
+                        <a class="download-btn" href="{{ url_for('download_file', filename=file.name) }}"
+                            aria-label="Download {{ file.name }}">
+                            <span>DOWNLOAD</span>
+                        </a>
+
+                        <form action="{{ url_for('delete_file', filename=file.name) }}" method="POST">
+                            <button type="submit" class="delete-btn" aria-label="Delete {{ file.name }}">
+                                ×
+                            </button>
+                        </form>
+
+                    </div>
+
+                </div>
+
+                {% else %}
+
+                <div class="empty-files">
+                    <p>No files shared yet.</p>
+                    <span>Upload your first file to get started.</span>
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+        <section class="network-access">
+
+            <div class="network-info">
+                <h2>Connect another device</h2>
+                <p>
+                    Access LANSHARE from another device connected to the same Wi-Fi network.
+                </p>
+            </div>
+
+            <div class="qr-placeholder">
+                <span>QR</span>
+            </div>
+
+            <div class="network-address">
+                <span>NETWORK ACCESS</span>
+                <p>QR code and LAN address will appear here.</p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        LANSHARE · Private file sharing on your local network
+    </footer>
 
     <script>
         const dropZone = document.querySelector(".drop-zone");
         const fileInput = document.querySelector("#fileInput");
+        const selectedFiles = document.querySelector("#selected-files");
+
+        const fileList = document.querySelector(".file-list");
+        const fileCount = document.querySelector(".file-count");
+
+
+        
+        function updateFileList(files) {
+            fileList.innerHTML = "";
+
+            fileCount.textContent = `${files.length} files`;
+
+            if (files.length === 0) {
+                fileList.innerHTML = `
+            <div class="empty-files">
+                <p>No files shared yet.</p>
+                <span>Upload your first file to get started.</span>
+            </div>
+        `;
+                return;
+            }
+
+            for (const file of files) {
+                const fileRow = document.createElement("div");
+                fileRow.className = "file";
+
+                const extension = file.name.includes(".")
+                    ? file.name.split(".").pop().slice(0, 4).toUpperCase()
+                    : "FILE";
+
+                fileRow.innerHTML = `
+            <div class="file-info">
+                <div class="file-icon">
+                    <span></span>
+                </div>
+
+                <div class="file-details">
+                    <span class="file-name"></span>
+                    <span class="file-size"></span>
+                </div>
+            </div>
+
+            <div class="file-actions">
+                <a class="download-btn">
+                    <span>DOWNLOAD</span>
+                </a>
+
+                <form method="POST">
+                    <button type="submit" class="delete-btn" aria-label="Delete file">×</button>
+                </form>
+            </div>
+        `;
+
+                fileRow.querySelector(".file-icon span").textContent = extension;
+                fileRow.querySelector(".file-name").textContent = file.name;
+                fileRow.querySelector(".file-size").textContent = file.size;
+
+                fileRow.querySelector(".download-btn").href =
+                    `/download/${encodeURIComponent(file.name)}`;
+
+                fileRow.querySelector("form").action =
+                    `/delete/${encodeURIComponent(file.name)}`;
+
+                fileList.appendChild(fileRow);
+            }
+        }
+
+
+        
+        dropZone.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(dropZone);
+
+            try {
+                const response = await fetch(dropZone.action, {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    updateFileList(result.files);
+
+                    selectedFiles.innerHTML = "";
+                    fileInput.value = "";
+
+                    console.log(result.message);
+                } else {
+                    console.error("Upload failed:", result);
+                }
+
+            } catch (error) {
+                console.error("Upload error:", error);
+            }
+        });
+
+
+        
+        fileList.addEventListener("submit", async (e) => {
+            const form = e.target.closest(".file-actions form");
+
+            if (!form) {
+                return;
+            }
+
+            e.preventDefault();
+
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST"
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    form.closest(".file").remove();
+
+                    const remainingFiles = fileList.querySelectorAll(".file").length;
+
+                    fileCount.textContent = `${remainingFiles} files`;
+
+                    if (remainingFiles === 0) {
+                        fileList.innerHTML = `
+                    <div class="empty-files">
+                        <p>No files shared yet.</p>
+                        <span>Upload your first file to get started.</span>
+                    </div>
+                `;
+                    }
+
+                } else {
+                    console.error("Delete failed:", result);
+                }
+
+            } catch (error) {
+                console.error("Delete error:", error);
+            }
+        });
+
+
+        
+        fileInput.addEventListener("change", () => {
+            const files = fileInput.files;
+
+            selectedFiles.innerHTML = "";
+
+            if (files.length === 0) {
+                return;
+            }
+
+            for (const file of files) {
+                const fileItem = document.createElement("div");
+
+                fileItem.textContent =
+                    `${file.name} — ${(file.size / 1000).toFixed(2)} KB`;
+
+                selectedFiles.appendChild(fileItem);
+            }
+        });
+
 
         dropZone.addEventListener("dragover", (e) => {
             e.preventDefault();
@@ -79,10 +334,9 @@
 
             dropZone.classList.remove("drag-over");
 
-            const files = e.dataTransfer.files;
-
-            if (files.length > 0) {
-                fileInput.files = files;
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                fileInput.dispatchEvent(new Event("change"));
             }
         });
     </script>

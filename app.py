@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, jsonify
 import os
 from werkzeug.utils import secure_filename
 
@@ -28,6 +28,8 @@ def home():
     file_details = []
     for file in files:
         file_path = os.path.join(app.config["UPLOAD_FOLDER"], file)
+        if not os.path.isfile(file_path):
+            continue
         size = os.path.getsize(file_path)
 
         file_details.append({
@@ -42,26 +44,67 @@ def download_file(filename):
                         filename,
                         as_attachment=True)
 
-@app.route("/upload", methods=["POST"])
-def upload_file():
-    print("Upload route reached!")
-    uploaded_file = request.files["file"]
-    safe_filename = secure_filename(uploaded_file.filename)
-    if not safe_filename:
-        return "Invalid filename!"
-    
-    name, extension = os.path.splitext(safe_filename)
-    counter = 1
+@app.route("/delete/<filename>", methods=["POST"])
+def delete_file(filename):
+    safe_filename = secure_filename(filename)
     file_path = os.path.join(app.config["UPLOAD_FOLDER"], safe_filename)
 
-    while os.path.exists(file_path):
-        safe_filename = f"{name}_{counter}{extension}"
+    if os.path.isfile(file_path):
+        os.remove(file_path)
+
+    return jsonify({
+    "success": True,
+    "filename": safe_filename
+})
+
+@app.route("/upload", methods=["POST"])
+def upload_file():
+    uploaded_files = request.files.getlist("files")
+
+    for uploaded_file in uploaded_files:
+        if not uploaded_file.filename:
+            continue
+
+        safe_filename = secure_filename(uploaded_file.filename)
+
+        if not safe_filename:
+            continue
+    
+        name, extension = os.path.splitext(safe_filename)
+        counter = 1
+
         file_path = os.path.join(app.config["UPLOAD_FOLDER"], safe_filename)
-        counter += 1
+
+        while os.path.exists(file_path):
+            safe_filename = f"{name}_{counter}{extension}"
+            file_path = os.path.join(app.config["UPLOAD_FOLDER"], safe_filename)
+            counter += 1
+
+        uploaded_file.save(file_path)
+
+    files = os.listdir(app.config["UPLOAD_FOLDER"])
+    file_details = []
+
+    for file in files:
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], file)
+
+        if not os.path.isfile(file_path):
+            continue
+
+        size = os.path.getsize(file_path)
+
+        file_details.append({
+            "name": file,
+            "size": format_size(size)
+        })
+
+    return jsonify({
+        "success": True,
+        "message": "Files uploaded successfully!",
+        "files": file_details
+    })
 
 
-    uploaded_file.save(file_path)
-    return(redirect(url_for("home")))
 
 if (__name__ == "__main__"):
     app.run(debug=True)
