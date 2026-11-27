@@ -3,10 +3,21 @@ import os
 from werkzeug.utils import secure_filename
 import qrcode
 import io
+import socket
 
 app = Flask(__name__)
-LAN_IP = "192.168.1.9"
-LAN_URL = f"http://{LAN_IP}:5000/"
+def get_lan_url():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    try:
+        sock.connect(("8.8.8.8", 80))
+        ip = sock.getsockname()[0]
+    except OSError:
+        ip = "127.0.0.1"
+    finally:
+        sock.close()
+
+    return f"http://{ip}:5000/"
 
 UPLOAD_FOLDER = "shared"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -43,7 +54,7 @@ def home():
     return render_template(
     "index.html",
     file_details=file_details,
-    lan_url=LAN_URL
+    lan_url=get_lan_url()
 )
 
 @app.route("/download/<filename>")
@@ -114,7 +125,7 @@ def upload_file():
 
 @app.route("/qr-code")
 def generate_qr():
-    qr = qrcode.make(LAN_URL)
+    qr = qrcode.make(get_lan_url())
 
     image = io.BytesIO()
     qr.save(image, format="PNG")
